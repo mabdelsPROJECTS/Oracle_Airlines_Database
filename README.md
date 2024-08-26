@@ -2,7 +2,6 @@
  Simple emulation of an airlines database using java on the front-end and oracle at the back-end
 
 
-
 ## Dropping the tables
 
 drop table baggage;
@@ -16,7 +15,7 @@ drop table airlines;
 drop table airplanes;
 drop table users;
 
-#Creating the tables
+## Creating the tables
 
 CREATE TABLE Users (
     userID INT PRIMARY KEY,
@@ -109,6 +108,7 @@ CREATE TABLE Baggage (
     FOREIGN KEY (bookingID) REFERENCES Bookings(bookingID)
 );
 
+## Inserting data 
 insert into airplanes values (452, 'Boeing-767', 200, 'Southwest Airlines');
 insert into airplanes values (437, 'Boeing-747', 450, 'Spirit');
 insert into airplanes values (455, 'Boeing-787', 300, 'American Airlines');
@@ -122,14 +122,10 @@ insert into airports values (24760, 'Dallas Fort Worth International', 'Dallas')
 insert into airports values (59023, 'Orlando International', 'Florida');
 commit;
 
-
-
 insert into flights values(05, 8250, 62989, 24760, 'Chicago To Dallas', 250);
 insert into flights values(06, 4599, 24760, 59023, 'Dallas To Florida', 450);
 insert into flights values (07, 2673,59023,62989, 'Florida To Chicago', 300);
 commit;
-
-
 
 insert into flightSchedules values( 111, 05, 455, '2024-08-22 03:30 PM', '2024-08-22 05:30 PM', 2);
 insert into flightschedules values( 222, 06, 452, '2024-08-25 07:30 PM','2024-08-25 9:00 PM', 1.50);
@@ -137,7 +133,7 @@ insert into flightschedules values (333, 07, 437, '2024-09-02 9:30 AM', '2024-09
 commit;
 
 
-
+## Creating Triggers
 
 create or replace trigger addPassenger 
 after insert on bookings
@@ -152,8 +148,6 @@ select firstName, lastName into firstNamey, lastNamey from users where userid = 
 insert into passengers (passengerid, bookingid, firstname, lastname, passportnumber) values (randomNum, :new.bookingid, firstNamey, lastNamey, :new.passportnumber);
 end;
 /
-
-
 
 create or replace trigger updatePayments 
 after insert on bookings
