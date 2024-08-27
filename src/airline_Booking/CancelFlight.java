@@ -41,7 +41,8 @@ public class CancelFlight {
 		        if (resultSet != null) {
 		            try {
 		                resultSet.close();
-		                System.out.println("Flight Cancelled");
+		                System.out.println();
+		                System.out.println(" Flight Cancelled ");
 		            } catch (SQLException e) {
 		                e.printStackTrace();
 		            }

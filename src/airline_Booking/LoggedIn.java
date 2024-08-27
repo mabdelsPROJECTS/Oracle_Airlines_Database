@@ -10,6 +10,7 @@ public class LoggedIn {
 	
 	public RemoveUser removeUser = new RemoveUser();
 	public CancelFlight cancelFlight = new CancelFlight();
+	public MakeAPayment makePayment = new MakeAPayment();
 	
 	
 	public void loggedInUser(Connection c, int userId, BookFlight bk) {
@@ -47,6 +48,10 @@ public class LoggedIn {
 					}
 					else if(answer.toLowerCase().equals("End".toLowerCase())) {
 						break;
+					}
+					else if(answer.toLowerCase().equals("Make A Payment".toLowerCase()) && hasPaymentDue) {
+						makePayment.makePayment(userId, c);
+						hasPaymentDue = false;
 					}
 					}
 				//System.out.println(status);
@@ -96,6 +101,10 @@ public class LoggedIn {
 						}
 						else if(answer.toLowerCase().equals("End".toLowerCase())) {
 							break;
+						}
+						else if(answer.toLowerCase().equals("Make A Payment".toLowerCase())) {
+							makePayment.makePayment(userId, c);
+							hasPaymentDue = false;
 						}
 					}
 				}
