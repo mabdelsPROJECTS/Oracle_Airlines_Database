@@ -180,22 +180,26 @@ This document describes the database schema for an airline booking system. The d
 ## Commit Statements
 - All data has been committed using `COMMIT;` statements after each set of inserts.
 
-## Creating Triggers
+## Triggers
 
-create or replace trigger addPassenger 
-after insert on bookings
-for each row
-declare 
-randomNum number;
-firstNamey varchar2(30);
-lastNamey varchar2(30);
-begin
-select dbms_random.value(100, 999) into randomNum from dual;
-select firstName, lastName into firstNamey, lastNamey from users where userid = :new.userid;
-insert into passengers (passengerid, bookingid, firstname, lastname, passportnumber) values (randomNum, :new.bookingid, firstNamey, lastNamey, :new.passportnumber);
-end;
+### 1. Trigger to Update Airline Capacity
+
+This trigger automatically updates the remaining capacity of an airline after a booking is made.
+
+```sql
+CREATE OR REPLACE TRIGGER update_airline_capacity
+AFTER INSERT ON Bookings
+FOR EACH ROW
+BEGIN
+  UPDATE Airplanes
+  SET capacity = capacity - 1
+  WHERE airplaneID = (SELECT airplaneID FROM FlightSchedules WHERE flightID = :NEW.flightID);
+END;
 /
 
+### 2. Trigger to Update Payments
+
+```sql
 create or replace trigger updatePayments 
 after insert on bookings
 for each row
