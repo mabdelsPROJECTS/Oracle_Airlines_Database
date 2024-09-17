@@ -200,16 +200,17 @@ END;
 ### 2. Trigger to Update Payments
 
 ```sql
-create or replace trigger updatePayments 
-after insert on bookings
-for each row
-declare 
-randomNum number;
-flightsPrice number;
---lastNamey varchar2(30);
-begin
-select dbms_random.value(100, 999) into randomNum from dual;
-select price into flightsPrice from flights where flightid = :new.flightid;
-insert into payments (paymentid, bookingid, amount, paymentdate, paymentmethod, status) values (randomNum, :new.bookingid, flightsprice, :new.bookingdate, 'N/A', 'Pending');
-end;
+CREATE OR REPLACE TRIGGER updatePayments 
+AFTER INSERT ON Bookings
+FOR EACH ROW
+DECLARE 
+  randomNum NUMBER;
+  flightsPrice NUMBER;
+BEGIN
+  SELECT dbms_random.value(100, 999) INTO randomNum FROM dual;
+  SELECT price INTO flightsPrice FROM Flights WHERE flightID = :NEW.flightID;
+
+  INSERT INTO Payments (paymentID, bookingID, amount, paymentDate, paymentMethod, status)
+  VALUES (randomNum, :NEW.bookingID, flightsPrice, :NEW.bookingDate, 'N/A', 'Pending');
+END;
 /
