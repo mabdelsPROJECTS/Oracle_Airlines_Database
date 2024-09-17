@@ -196,6 +196,7 @@ BEGIN
   WHERE airplaneID = (SELECT airplaneID FROM FlightSchedules WHERE flightID = :NEW.flightID);
 END;
 /
+```
 
 ### 2. Trigger to Update Payments
 
