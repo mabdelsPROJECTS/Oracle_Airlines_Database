@@ -1,137 +1,184 @@
-# AirlinesDatabase
- Simple emulation of an airlines database using java on the front-end and oracle at the back-end
+# Airlines Database Schema
 
+This document describes the database schema for an airline booking system. The database consists of several tables to store information about users, airlines, flights, bookings, airplanes, passengers, payments, and baggage.
 
-## Dropping the tables
+## Tables
 
-drop table baggage;
-drop table payments;
-drop table passengers;
-drop table bookings;
-drop table FlightSchedules;
-drop table flights;
-drop table airports;
-drop table airlines;
-drop table airplanes;
-drop table users;
+### 1. Users Table
 
-## Creating the tables
+| Column      | Data Type     | Constraints  |
+|-------------|---------------|--------------|
+| userID      | INT           | PRIMARY KEY  |
+| firstName   | VARCHAR2(50)  | NOT NULL     |
+| lastName    | VARCHAR2(50)  | NOT NULL     |
+| username    | VARCHAR2(50)  | NOT NULL     |
+| password    | VARCHAR2(255) | NOT NULL     |
+| email       | VARCHAR2(100) |              |
+| phoneNumber | VARCHAR2(20)  |              |
 
-CREATE TABLE Users (
-    userID INT PRIMARY KEY,
-    firstName VARCHAR2(50),
-    lastName VARCHAR2(50),
-    username VARCHAR2(50),
-    password VARCHAR2(255),
-    email VARCHAR2(100),
-    phoneNumber VARCHAR2(20)
-);
+---
 
-CREATE TABLE Airlines (
-    airlineID INT PRIMARY KEY,
-    airlineName VARCHAR2(100),
-    location VARCHAR2(100)
-);
+### 2. Airlines Table
 
-CREATE TABLE Flights (
-    flightID INT PRIMARY KEY,
-    airlineID INT,
-    departureAirportID INT,
-    arrivalAirportID INT,
-    flightDescription VARCHAR2(255),
-    price DECIMAL(10, 2),
-    FOREIGN KEY (airlineID) REFERENCES Airlines(airlineID),
-    FOREIGN KEY (departureAirportID) REFERENCES Airports(airportID),
-    FOREIGN KEY (arrivalAirportID) REFERENCES Airports(airportID)
-);
+| Column      | Data Type     | Constraints  |
+|-------------|---------------|--------------|
+| airlineID   | INT           | PRIMARY KEY  |
+| airlineName | VARCHAR2(100) | NOT NULL     |
+| location    | VARCHAR2(100) |              |
 
-CREATE TABLE Bookings (
-    bookingID INT PRIMARY KEY,
-    userID INT,
-    flightID INT,
-    bookingDate DATE,
-    status VARCHAR2(50),
-    passportNumber varchar2(50),
-    FOREIGN KEY (userID) REFERENCES Users(userID),
-    FOREIGN KEY (flightID) REFERENCES Flights(flightID)
-);
+---
 
-CREATE TABLE Passengers (
-    passengerID INT PRIMARY KEY,
-    bookingID INT,
-    firstName VARCHAR(50),
-    lastName VARCHAR(50),
-    passportNumber VARCHAR(20),
-    FOREIGN KEY (bookingID) REFERENCES Bookings(bookingID)
-);
+### 3. Flights Table
 
-CREATE TABLE Airplanes (
-    airplaneID INT PRIMARY KEY,
-    model VARCHAR2(100),
-    capacity INT,
-    airlineName VARCHAR(100)
-);
+| Column             | Data Type       | Constraints  |
+|--------------------|-----------------|--------------|
+| flightID           | INT             | PRIMARY KEY  |
+| airlineID          | INT             | FOREIGN KEY (References Airlines.airlineID) |
+| departureAirportID | INT             | FOREIGN KEY (References Airports.airportID) |
+| arrivalAirportID   | INT             | FOREIGN KEY (References Airports.airportID) |
+| flightDescription  | VARCHAR2(255)   |              |
+| price              | DECIMAL(10, 2)  |              |
 
-CREATE TABLE FlightSchedules (  
-    scheduleID INT PRIMARY KEY,
-    flightID INT,
-    airplaneID INT,
-    departureTime varchar2(30),
-    arrivalTime varchar2(30),
-    duration number,
-    FOREIGN KEY (flightID) REFERENCES Flights(flightID),
-    FOREIGN KEY (airplaneID) REFERENCES Airplanes(airplaneID)
-);
+---
 
-CREATE TABLE Airports (
-    airportID INT PRIMARY KEY,
-    airportName VARCHAR2(100),
-    location VARCHAR2(100)
-);
+### 4. Bookings Table
 
-CREATE TABLE Payments (
-    paymentID INT PRIMARY KEY,
-    bookingID INT,
-    amount DECIMAL(10, 2),
-    paymentDate DATE,
-    paymentMethod VARCHAR2(50),
-    status VARCHAR2(50),
-    FOREIGN KEY (bookingID) REFERENCES Bookings(bookingID)
-);
+| Column         | Data Type      | Constraints  |
+|----------------|----------------|--------------|
+| bookingID      | INT            | PRIMARY KEY  |
+| userID         | INT            | FOREIGN KEY (References Users.userID) |
+| flightID       | INT            | FOREIGN KEY (References Flights.flightID) |
+| bookingDate    | DATE           |              |
+| status         | VARCHAR2(50)   |              |
+| passportNumber | VARCHAR2(50)   |              |
 
-CREATE TABLE Baggage (
-    baggageID INT PRIMARY KEY,
-    bookingID INT,
-    weight DECIMAL(5, 2),
-    type VARCHAR2(50),
-    fee DECIMAL(10, 2),
-    FOREIGN KEY (bookingID) REFERENCES Bookings(bookingID)
-);
+---
 
-## Inserting data 
-insert into airplanes values (452, 'Boeing-767', 200, 'Southwest Airlines');
-insert into airplanes values (437, 'Boeing-747', 450, 'Spirit');
-insert into airplanes values (455, 'Boeing-787', 300, 'American Airlines');
+### 5. Passengers Table
 
-insert into airlines values (8250, 'American Airlines', 'Chicago');
-insert into airlines values (4599, 'Southwest Airlines', 'Dallas');
-insert into airlines values (2673, 'Spirit Airlines', 'Florida');
+| Column         | Data Type     | Constraints  |
+|----------------|---------------|--------------|
+| passengerID    | INT           | PRIMARY KEY  |
+| bookingID      | INT           | FOREIGN KEY (References Bookings.bookingID) |
+| firstName      | VARCHAR(50)   | NOT NULL     |
+| lastName       | VARCHAR(50)   | NOT NULL     |
+| passportNumber | VARCHAR(20)   |              |
 
-insert into airports values (62989, 'O''Hare', 'Chicago');
-insert into airports values (24760, 'Dallas Fort Worth International', 'Dallas');
-insert into airports values (59023, 'Orlando International', 'Florida');
-commit;
+---
 
-insert into flights values(05, 8250, 62989, 24760, 'Chicago To Dallas', 250);
-insert into flights values(06, 4599, 24760, 59023, 'Dallas To Florida', 450);
-insert into flights values (07, 2673,59023,62989, 'Florida To Chicago', 300);
-commit;
+### 6. Airplanes Table
 
-insert into flightSchedules values( 111, 05, 455, '2024-08-22 03:30 PM', '2024-08-22 05:30 PM', 2);
-insert into flightschedules values( 222, 06, 452, '2024-08-25 07:30 PM','2024-08-25 9:00 PM', 1.50);
-insert into flightschedules values (333, 07, 437, '2024-09-02 9:30 AM', '2024-09-02 011:30 AM', 2);
-commit;
+| Column      | Data Type      | Constraints  |
+|-------------|----------------|--------------|
+| airplaneID  | INT            | PRIMARY KEY  |
+| model       | VARCHAR2(100)  |              |
+| capacity    | INT            |              |
+| airlineName | VARCHAR2(100)  |              |
 
+---
+
+### 7. Flight Schedules Table
+
+| Column        | Data Type     | Constraints  |
+|---------------|---------------|--------------|
+| scheduleID    | INT           | PRIMARY KEY  |
+| flightID      | INT           | FOREIGN KEY (References Flights.flightID) |
+| airplaneID    | INT           | FOREIGN KEY (References Airplanes.airplaneID) |
+| departureTime | VARCHAR2(30)  |              |
+| arrivalTime   | VARCHAR2(30)  |              |
+| duration      | NUMBER        |              |
+
+---
+
+### 8. Airports Table
+
+| Column      | Data Type      | Constraints  |
+|-------------|----------------|--------------|
+| airportID   | INT            | PRIMARY KEY  |
+| airportName | VARCHAR2(100)  |              |
+| location    | VARCHAR2(100)  |              |
+
+---
+
+### 9. Payments Table
+
+| Column        | Data Type     | Constraints  |
+|---------------|---------------|--------------|
+| paymentID     | INT           | PRIMARY KEY  |
+| bookingID     | INT           | FOREIGN KEY (References Bookings.bookingID) |
+| amount        | DECIMAL(10, 2)|              |
+| paymentDate   | DATE          |              |
+| paymentMethod | VARCHAR2(50)  |              |
+| status        | VARCHAR2(50)  |              |
+
+---
+
+### 10. Baggage Table
+
+| Column        | Data Type      | Constraints  |
+|---------------|----------------|--------------|
+| baggageID     | INT            | PRIMARY KEY  |
+| bookingID     | INT            | FOREIGN KEY (References Bookings.bookingID) |
+| weight        | DECIMAL(5, 2)  |              |
+| type          | VARCHAR2(50)   |              |
+| fee           | DECIMAL(10, 2) |              |
+
+---
+
+## Inserted Data
+
+### Airplanes
+
+| airplaneID | model       | capacity | airlineName        |
+|------------|-------------|----------|--------------------|
+| 452        | Boeing-767  | 200      | Southwest Airlines |
+| 437        | Boeing-747  | 450      | Spirit             |
+| 455        | Boeing-787  | 300      | American Airlines  |
+
+---
+
+### Airlines
+
+| airlineID | airlineName        | location |
+|-----------|--------------------|----------|
+| 8250      | American Airlines   | Chicago  |
+| 4599      | Southwest Airlines  | Dallas   |
+| 2673      | Spirit Airlines     | Florida  |
+
+---
+
+### Airports
+
+| airportID | airportName               | location |
+|-----------|---------------------------|----------|
+| 62989     | O'Hare                    | Chicago  |
+| 24760     | Dallas Fort Worth Intl     | Dallas   |
+| 59023     | Orlando International      | Florida  |
+
+---
+
+### Flights
+
+| flightID | airlineID | departureAirportID | arrivalAirportID | flightDescription      | price  |
+|----------|-----------|--------------------|------------------|------------------------|--------|
+| 05       | 8250      | 62989              | 24760            | Chicago To Dallas       | 250.00 |
+| 06       | 4599      | 24760              | 59023            | Dallas To Florida       | 450.00 |
+| 07       | 2673      | 59023              | 62989            | Florida To Chicago      | 300.00 |
+
+---
+
+### Flight Schedules
+
+| scheduleID | flightID | airplaneID | departureTime          | arrivalTime            | duration |
+|------------|----------|------------|------------------------|------------------------|----------|
+| 111        | 05       | 455        | 2024-08-22 03:30 PM    | 2024-08-22 05:30 PM    | 2.00     |
+| 222        | 06       | 452        | 2024-08-25 07:30 PM    | 2024-08-25 09:00 PM    | 1.50     |
+| 333        | 07       | 437        | 2024-09-02 09:30 AM    | 2024-09-02 11:30 AM    | 2.00     |
+
+---
+
+## Commit Statements
+- All data has been committed using `COMMIT;` statements after each set of inserts.
 
 ## Creating Triggers
 
